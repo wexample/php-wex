@@ -6,10 +6,10 @@ namespace Wexample\PhpWex\Exceptions;
 
 class WexBinaryNotFoundException extends WexException
 {
-    public static function forBinary(string $binary): self
+    public static function forPath(string $path): self
     {
         return new self(
-            sprintf('Unable to locate the wex binary "%s" in PATH.', $binary)
+            sprintf('The wex binary "%s" does not exist or is not executable.', $path)
         );
     }
 }

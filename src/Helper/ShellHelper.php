@@ -70,33 +70,6 @@ final class ShellHelper
     }
 
     /**
-     * Resolve an executable name against PATH. Names already containing a
-     * directory separator are checked as-is.
-     */
-    public static function findExecutable(string $name): ?string
-    {
-        if (str_contains($name, '/')) {
-            return is_executable($name) ? $name : null;
-        }
-
-        $paths = explode(PATH_SEPARATOR, (string) getenv('PATH'));
-
-        foreach ($paths as $path) {
-            if ('' === $path) {
-                continue;
-            }
-
-            $candidate = rtrim($path, '/').'/'.$name;
-
-            if (is_executable($candidate)) {
-                return $candidate;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * @param resource               $process
      * @param array<int, resource>   $pipes
      * @param string[]               $command
