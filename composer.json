@@ -1,0 +1,30 @@
+{
+  "name": "wexample/php-wex",
+  "description": "PHP port of the wex Python CLI, executed as a subprocess",
+  "type": "library",
+  "license": "MIT",
+  "version": "0.0.1",
+  "autoload": {
+    "psr-4": {
+      "Wexample\\PhpWex\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Wexample\\PhpWex\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "weeger",
+      "email": "romain.weeger@wexample.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "wexample/php-helpers": ">=2.0.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  }
+}

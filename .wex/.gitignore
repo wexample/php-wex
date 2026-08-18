@@ -1,0 +1,15 @@
+.py[cod]
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pdm-python
+# Virtual environments
+.env
+.venv
+venv/
+.pdm-build
+/tmp
+/.env
+/tmp/
+/local/
