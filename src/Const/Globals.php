@@ -9,8 +9,6 @@ final class Globals
     public const CORE_COMMAND_NAME = 'wex';
 
     public const DIR_NAME_WEX = '.wex';
-    public const DIR_NAME_TMP = 'tmp';
-    public const DIR_NAME_OUTPUT = 'output';
     public const DIR_NAME_BIN = 'bin';
     public const FILE_NAME_APP_MANAGER = 'app-manager';
 
@@ -27,5 +25,6 @@ final class Globals
     public const OPTION_INDENTATION_LEVEL = '--indentation-level';
     public const OPTION_OUTPUT_FORMAT = '--output-format';
     public const OPTION_OUTPUT_TARGET = '--output-target';
+    public const OPTION_OUTPUT_FILE = '--output-file';
     public const OPTION_SUBPROCESS = '--subprocess';
 }

@@ -13,6 +13,13 @@ class ProcessFailedException extends WexException
         );
     }
 
+    public static function unableToCreateOutputDirectory(string $path): self
+    {
+        return new self(
+            sprintf('Unable to create the output directory "%s".', $path)
+        );
+    }
+
     public static function timedOut(array $command, float $timeout): self
     {
         return new self(

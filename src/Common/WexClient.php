@@ -16,8 +16,11 @@ use Wexample\PhpWex\Helper\WorkdirHelper;
  * Runs wex commands as subprocesses.
  *
  * Structured results are not read from stdout: wex is asked to write its
- * response as JSON into ".wex/tmp/output/<request-id>", which this client then
- * reads and removes. stdout stays available for human-readable rendering.
+ * response as JSON into a private temporary file, which this client then reads
+ * and removes. stdout stays available for human-readable rendering.
+ *
+ * The working directory only decides which commands wex exposes, an app adding
+ * its own on top of the addon ones.
  */
 final class WexClient
 {
@@ -26,6 +29,23 @@ final class WexClient
         private readonly ?string $workingDirectory = null,
         private readonly ?float $timeout = null,
     ) {
+    }
+
+    /**
+     * Target another app through its own ".wex/bin/app-manager" entrypoint,
+     * the way a suite drives its sub-packages.
+     *
+     * The shim resolves the core binary itself (CORE_BIN from /etc/wex.conf,
+     * then PATH), so the app stays free to pin a specific wex install and the
+     * caller needs nothing but the app path.
+     */
+    public static function forApp(string $appPath, ?float $timeout = null): self
+    {
+        return new self(
+            binary: WorkdirHelper::appManagerPath($appPath),
+            workingDirectory: $appPath,
+            timeout: $timeout,
+        );
     }
 
     /**
@@ -40,25 +60,28 @@ final class WexClient
     ): WexResult {
         $address = is_string($command) ? CommandAddress::fromString($command) : $command;
         $requestId = RequestHelper::generateId();
-        $cwd = $this->resolveWorkingDirectory();
+        $directory = RequestHelper::createOutputDirectory();
 
-        $result = $this->execute(
-            [
-                Globals::OPTION_FORCE_REQUEST_ID, $requestId,
-                Globals::OPTION_OUTPUT_FORMAT, OutputFormat::JSON->value,
-                Globals::OPTION_OUTPUT_TARGET, OutputTarget::FILE->value,
-                Globals::OPTION_SUBPROCESS,
-                $address->toString(),
-                ...$arguments,
-            ],
-            $inheritStdio,
-        );
+        try {
+            $result = $this->execute(
+                [
+                    Globals::OPTION_FORCE_REQUEST_ID, $requestId,
+                    Globals::OPTION_OUTPUT_FORMAT, OutputFormat::JSON->value,
+                    Globals::OPTION_OUTPUT_TARGET, OutputTarget::FILE->value,
+                    Globals::OPTION_OUTPUT_FILE, $directory.'/'.$requestId,
+                    Globals::OPTION_SUBPROCESS,
+                    $address->toString(),
+                    ...$arguments,
+                ],
+                $inheritStdio,
+            );
 
-        return WexResult::fromShellResult(
-            $result,
-            $requestId,
-            $this->consumeOutput($cwd, $requestId),
-        );
+            $output = self::readOutput($directory.'/'.$requestId);
+        } finally {
+            RequestHelper::discardOutputDirectory($directory);
+        }
+
+        return WexResult::fromShellResult($result, $requestId, $output);
     }
 
     /**
@@ -77,23 +100,23 @@ final class WexClient
         );
     }
 
-    public function isAvailable(): bool
-    {
-        return null !== ShellHelper::findExecutable($this->binary);
-    }
-
     /**
+     * Bare names are left to the OS to resolve against PATH; explicit paths
+     * must point at a real executable.
+     *
      * @throws WexBinaryNotFoundException
      */
     public function resolveBinary(): string
     {
-        $path = ShellHelper::findExecutable($this->binary);
-
-        if (null === $path) {
-            throw WexBinaryNotFoundException::forBinary($this->binary);
+        if (!str_contains($this->binary, '/')) {
+            return $this->binary;
         }
 
-        return $path;
+        if (!is_executable($this->binary)) {
+            throw WexBinaryNotFoundException::forPath($this->binary);
+        }
+
+        return $this->binary;
     }
 
     private function resolveWorkingDirectory(): string
@@ -102,30 +125,17 @@ final class WexClient
     }
 
     /**
-     * Read then delete the response file wex wrote for this request. Returns
-     * null when the command produced no output.
+     * Read the response file wex wrote for this request. Returns null when the
+     * command produced no output.
      */
-    private function consumeOutput(string $cwd, string $requestId): mixed
+    private static function readOutput(string $path): mixed
     {
-        $workdir = WorkdirHelper::findClosestWorkdir($cwd);
-
-        if (null === $workdir) {
-            return null;
-        }
-
-        $path = WorkdirHelper::outputFilePath($workdir, $requestId);
-
         if (!is_file($path)) {
             return null;
         }
 
-        $content = file_get_contents($path);
-        unlink($path);
+        $content = trim((string) file_get_contents($path));
 
-        if (false === $content || '' === $content) {
-            return null;
-        }
-
-        return json_decode($content, true);
+        return '' === $content ? null : json_decode($content, true);
     }
 }

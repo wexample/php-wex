@@ -9,51 +9,18 @@ use Wexample\PhpWex\Const\Globals;
 final class WorkdirHelper
 {
     /**
-     * Walk up from the given path until a directory holding a ".wex" folder is
-     * found. This mirrors how wex resolves the workdir of the calling process.
+     * wex resolves its workdir as the current directory of the calling process,
+     * without ever walking up the tree.
      */
-    public static function findClosestWorkdir(string $from): ?string
+    public static function workdirPath(string $cwd): string
     {
-        $current = realpath($from);
-
-        if (false === $current) {
-            return null;
-        }
-
-        while (true) {
-            if (is_dir($current.'/'.Globals::DIR_NAME_WEX)) {
-                return $current;
-            }
-
-            $parent = dirname($current);
-
-            if ($parent === $current) {
-                return null;
-            }
-
-            $current = $parent;
-        }
+        return rtrim($cwd, '/').'/'.Globals::DIR_NAME_WEX;
     }
 
-    /**
-     * Path of the file wex writes when invoked with an output target of "file".
-     */
-    public static function outputFilePath(string $workdir, string $requestId): string
+    public static function appManagerPath(string $cwd): string
     {
         return implode('/', [
-            rtrim($workdir, '/'),
-            Globals::DIR_NAME_WEX,
-            Globals::DIR_NAME_TMP,
-            Globals::DIR_NAME_OUTPUT,
-            $requestId,
-        ]);
-    }
-
-    public static function appManagerPath(string $workdir): string
-    {
-        return implode('/', [
-            rtrim($workdir, '/'),
-            Globals::DIR_NAME_WEX,
+            self::workdirPath($cwd),
             Globals::DIR_NAME_BIN,
             Globals::FILE_NAME_APP_MANAGER,
         ]);
