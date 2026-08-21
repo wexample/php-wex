@@ -29,7 +29,7 @@ final class RequestHelper
     {
         $path = sys_get_temp_dir().'/wex-'.bin2hex(random_bytes(8));
 
-        if (!mkdir($path, 0o700) && !is_dir($path)) {
+        if (! mkdir($path, 0o700) && ! is_dir($path)) {
             throw ProcessFailedException::unableToCreateOutputDirectory($path);
         }
 

@@ -30,7 +30,7 @@ final readonly class CommandAddress
         $command = trim($command);
 
         foreach ([CommandType::APP, CommandType::SERVICE, CommandType::USER, CommandType::ADDON] as $type) {
-            if (!preg_match($type->pattern(), $command, $matches)) {
+            if (! preg_match($type->pattern(), $command, $matches)) {
                 continue;
             }
 

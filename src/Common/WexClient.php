@@ -108,11 +108,11 @@ final class WexClient
      */
     public function resolveBinary(): string
     {
-        if (!str_contains($this->binary, '/')) {
+        if (! str_contains($this->binary, '/')) {
             return $this->binary;
         }
 
-        if (!is_executable($this->binary)) {
+        if (! is_executable($this->binary)) {
             throw WexBinaryNotFoundException::forPath($this->binary);
         }
 
@@ -130,7 +130,7 @@ final class WexClient
      */
     private static function readOutput(string $path): mixed
     {
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             return null;
         }
 

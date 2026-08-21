@@ -42,7 +42,7 @@ final class ShellHelper
         $pipes = [];
         $process = proc_open($command, $descriptors, $pipes, $cwd);
 
-        if (!is_resource($process)) {
+        if (! is_resource($process)) {
             throw ProcessFailedException::unableToStart($command);
         }
 
@@ -102,7 +102,7 @@ final class ShellHelper
             }
 
             foreach ($open as $index => $stream) {
-                if (!in_array($stream, $read, true)) {
+                if (! in_array($stream, $read, true)) {
                     continue;
                 }
 
