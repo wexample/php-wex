@@ -21,7 +21,7 @@
     }
   ],
   "require": {
-    "php": ">=8.2",
+    "php": ">=8.5",
     "wexample/php-helpers": ">=3.0.0"
   },
   "require-dev": {
