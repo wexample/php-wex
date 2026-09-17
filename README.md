@@ -1,6 +1,6 @@
 # php_wex
 
-Version: 1.0.0
+Version: 1.0.1
 
 `wexample/php-wex` is a Composer library that lets PHP applications invoke `wex` commands as subprocesses and read their structured output. It sends the command address and arguments to the `wex` binary — or to a per-app `.wex/bin/app-manager` shim when targeting another project — asks `wex` to write its JSON response to a private temporary file, and returns the decoded payload as a `WexResult`. PHP backends and suites that need to drive `wex`-managed services programmatically, without parsing stdout, are the intended consumers.
 
@@ -69,8 +69,8 @@ Visit the [Wexample Suite documentation](https://docs.wexample.com) for the comp
 
 ## Dependencies
 
-- php: >=8.2
-- wexample/php-helpers: >=3.0.0
+- php: >=8.5
+- wexample/php-helpers: >=4.0.0
 
 ## Versioning & Compatibility Policy
 

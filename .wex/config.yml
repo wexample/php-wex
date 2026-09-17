@@ -6,7 +6,7 @@ git:
 global:
   name: php_wex
   type: app
-  version: 1.0.0
+  version: 1.0.1
 wex:
   migration: 5
   version: 6.0.136
