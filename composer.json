@@ -3,7 +3,7 @@
   "description": "PHP port of the wex Python CLI, executed as a subprocess",
   "type": "library",
   "license": "MIT",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "autoload": {
     "psr-4": {
       "Wexample\\PhpWex\\": "src/"
