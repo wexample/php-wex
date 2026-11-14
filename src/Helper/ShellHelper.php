@@ -13,6 +13,14 @@ final class ShellHelper
     private const SELECT_TIMEOUT_MICROSECONDS = 200000;
 
     /**
+     * How often an exit is looked for. Output closing comes a moment before the
+     * process is reaped, so most commands are found running once more: a
+     * shorter wait than the select's keeps that moment from adding a fifth of
+     * a second to every call, for a status check that costs next to nothing.
+     */
+    private const WAIT_POLL_MICROSECONDS = 10000;
+
+    /**
      * Run a command without going through a shell, so arguments never need
      * escaping.
      *
@@ -132,7 +140,7 @@ final class ShellHelper
 
         while ($status['running']) {
             self::assertNotTimedOut($process, $command, $timeout, $startTime);
-            usleep(self::SELECT_TIMEOUT_MICROSECONDS);
+            usleep(self::WAIT_POLL_MICROSECONDS);
             $status = proc_get_status($process);
         }
 
