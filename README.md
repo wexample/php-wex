@@ -1,6 +1,6 @@
 # php_wex
 
-Version: 1.0.6
+Version: 1.1.0
 
 PHP port of the wex Python CLI, executed as a subprocess
 
